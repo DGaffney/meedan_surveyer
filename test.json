@@ -1,0 +1,1 @@
+{"survey_name":"Test","survey_type":"categorization","annotators_per_item":3,"annotations_per_annotator":2,"choices":["Yes","No","Maybe"],"choices_exclusive":true,"items":[{"text": "Digital Goober"},{"text": "And one more for fun"},{"text":"This is one"},{"text":"Yet another"},{"text":"And one more"}]}

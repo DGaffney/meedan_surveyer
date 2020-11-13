@@ -1,0 +1,32 @@
+<script language="JavaScript">
+$( document ).ready(function() {
+	console.log( "ready!" );
+    $(document).keypress(function(e) {
+    	var keycode=e.which;
+    	if (keycode==13) {
+    		//enter
+    		//$("form:first").submit();
+			$("form:first").find('[type="submit"]').trigger('click');
+    	} else if (keycode-48>0 && keycode-48<10) {
+    		var num=keycode-49; //form numbers start at 0
+          $("#response_"+num).select().trigger("click");
+        // <% if @survey.choices_exclusive %>
+        //   $("#response_"+num).select().prop("checked", true);
+        // <% else %>
+        //   $("#response_"+num).select().trigger("click")
+        // <% end %>
+    	}
+
+    });
+});
+</script>
+<h1>Disclaimer for <%= @survey.survey_name %></h1>
+<h2>Please Read and Accept this Disclaimer</h2>
+<form method="post" action="/surveys/disclaimer/<%= @survey.id %>/<%= @annotator.id %>">
+  <p><%= @survey.disclaimer_text || @survey.default_disclaimer_text %></p>
+  <div class="form">
+    <input type="hidden" id="fingerprint" name="fingerprint" value="">
+    <button type="submit" class="btn btn-primary">Accept</button>
+  </div>
+</form>
+<br />

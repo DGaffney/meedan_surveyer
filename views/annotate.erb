@@ -1,0 +1,82 @@
+<script language="JavaScript">
+$( document ).ready(function() {
+	console.log( "ready!" );
+    $(document).keypress(function(e) {
+    	var keycode=e.which;
+		if (keycode==13) {
+    		//enter - will trigger warning if required fields are not completed
+			$("form:first").find('[type="submit"]').trigger('click');
+    	} else if (keycode-48>=0 && keycode-48<10) {
+    		var num=keycode-48;
+    		if (num==0) {
+				///$("#skip").prop("value","true");
+	    		//$("form:first").submit(); //submits regardless of whether required fields are completed or not
+	    		window.location.href = "/surveys/<%= @survey.id %>/<%= @annotator.id %>/skip/<%= @survey_item.id %>";
+	    	} else {
+				$("#response_"+(num-1)).select().trigger("click");//works for radio or checkboxes and can just be .click()
+	    	}
+    	}
+    });
+});
+</script>
+<h1>Annotating <%= @survey.survey_name %></h1>
+<h2>Content to annotate:</h2>
+<blockquote class="blockquote text-center">
+  <p class="mb-0"><%= @survey_item.content["text"] %></p>
+</blockquote>
+<h2>Annotation Options</h2>
+<p class="text-danger">[0] <b>Note:</b> You may skip annotating this item if it is too objectionable or disturbing by pressing zero.</p>
+<h5><%= @survey.description %></h5>
+<% if @prev_annotation %>
+<form method="post" action="/surveys/<%= @survey.id %>/<%= @annotator.id %>?annotation_id=<%= @prev_annotation.id %>">
+<% else %>
+<form method="post" action="/surveys/<%= @survey.id %>/<%= @annotator.id %>">
+<% end %>
+  <div class="form">
+    <% @survey.choices.each_with_index do |choice, i| %>
+        <h4>
+        <% if @survey.choices_exclusive %>
+          <% if choice == "user_specified_response" %>
+              <input class="form-check-input" type="radio" name="response" value="response_<%= i %>" id="response_<%= i %>">
+              <label class="form-check-label" for="response_<%= i %>">
+                [<%= i+1 %>] Unsure (please specify)
+              </label>
+              <br />
+              <br />
+              <input type="text" class="form-control" name="response_<%= i %>_specify" id="response_<%= i %>_specify" placeholder="Please Specify">
+          <% else %>
+              <input class="form-check-input" type="radio" name="response" value="response_<%= i %>" id="response_<%= i %>" required>
+              <label class="form-check-label" for="response_<%= i %>">
+                [<%= i+1 %>] <%= choice %>
+              </label>
+          <% end %>
+        <% else %>
+          <input class="form-check-input" type="checkbox" name="response_<%= i %>" value="response_<%= i %>" id="response_<%= i %>">
+          <label class="form-check-label" for="response_<%= i %>">
+            [<%= i+1 %>] <%= choice %>
+          </label>
+        <% end %>
+        </h4>
+    <% end %>
+    <% if @cur_annotation %>
+      <input type="hidden" id="render_time" name="existing_annotation_id" value="<%= @cur_annotation.id %>">
+    <% end %>
+    <br />
+    <br />
+    <input class="form-check-input" type="checkbox" name="offensive" value="offensive" id="response_<%= @survey.choices.length %>" >
+    <label class="form-check-label small" for="offensive">
+      [<%= @survey.choices.length+1 %>] This item contains offensive, violent, and/or hateful content
+    </label>
+    <input type="hidden" id="render_time" name="render_time" value="<%= @render_time %>">
+    <input type="hidden" id="survey_item_id" name="survey_item_id" value="<%= @survey_item.id %>">
+    <input type="hidden" id="fingerprint" name="fingerprint" value="">
+    <br />
+    <br />
+    <button type="submit" class="btn btn-primary">[Enter] Submit</button>
+  </div>
+</form>
+<br />
+<p class="small"><b>Question ID:</b> #<%= @survey_item.id %> | <b>Progress:</b> <%= @completed_count %> completed, <%= @to_go_count %> left</p>
+<% if @prev_annotation %>
+<a href="/surveys/<%= @survey.id %>/<%= @annotator.id %>?annotation_id=<%= @prev_annotation.id %>">Edit Previous Response</a>
+<% end %>
