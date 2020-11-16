@@ -38,6 +38,6 @@ task :export_survey do
 end
 
 task :clear_database do
-  [Survey, SurveyItem, Annotation, Annotator].collect(&:destroy_all)
-  build_indices
+  Util.clear_db
+  Util.build_indices
 end
